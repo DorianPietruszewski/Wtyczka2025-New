@@ -209,7 +209,7 @@ export default function Home() {
                     href="https://drive.google.com/file/d/1nIkLbvDKASJVq6a6RB75dlIA4bDWd26F/view"
                     target="_blank"
                     rel="noopener"
-                    className="py-2 px-4 rounded text-left block hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                    className="py-2 px-4 rounded text-left block transition-colors duration-200"
                     onClick={() => setNavOpen(false)}
                   >
                     {tab.label}
@@ -219,7 +219,7 @@ export default function Home() {
                 return (
                   <button
                     key={tab.value}
-                    className={`py-2 px-4 rounded text-left hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200${activeTab === tab.value ? " font-bold text-cyan-400" : ""}`}
+                    className={`py-2 px-4 rounded text-left transition-colors duration-200${activeTab === tab.value ? " font-bold text-cyan-400" : ""}`}
                     onClick={() => {
                       setActiveTab(tab.value);
                       setNavOpen(false);

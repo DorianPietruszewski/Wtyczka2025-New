@@ -1,4 +1,4 @@
-import RegistrationForm from "@/components/registration-form";
+import RegistrationForm from "@/app/registration-form";
 
 export default function FormTab() {
   return (
