@@ -393,7 +393,7 @@ export default function Home() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="prose prose-sm sm:prose-base text-gray-800 dark:text-gray-100 leading-relaxed space-y-4 mt-4 px-4"
+                      className="prose prose-sm sm:prose-base bg-black text-white leading-relaxed space-y-4 mt-4 px-4 rounded-2xl"
                     >
                       <h2 className="text-xl font-bold flex items-center gap-2">🧭 O WYJEŹDZIE</h2>
                       <p>
@@ -424,7 +424,7 @@ export default function Home() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="prose prose-sm sm:prose-base text-gray-800 dark:text-gray-100 leading-relaxed space-y-4 mt-4 px-4"
+                      className="prose prose-sm sm:prose-base bg-black text-white leading-relaxed space-y-4 mt-4 px-4 rounded-2xl"
                     >
                       <h2 className="text-xl font-bold flex items-center gap-2">🎒 CO ZABRAĆ?</h2>
                       <p>Pakowanie przed Wtyczką nie musi być trudne – oto niezbędnik uczestnika:</p>
@@ -449,7 +449,7 @@ export default function Home() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="prose prose-sm sm:prose-base text-gray-800 dark:text-gray-100 leading-relaxed space-y-4 mt-4 px-4"
+                      className="prose prose-sm sm:prose-base bg-black text-white leading-relaxed space-y-4 mt-4 px-4 rounded-2xl"
                     >
                       <h2 className="text-xl font-bold flex items-center gap-2">📰 AKTUALNOŚCI</h2>
                       <p>
@@ -457,15 +457,15 @@ export default function Home() {
                       </p>
                       <div className="space-y-4">
                         {/* Przykładowe aktualności - w prawdziwej aplikacji te dane będą dynamiczne */}
-                        <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md">
-                          <h3 className="font-semibold text-gray-800 dark:text-gray-200">Nowy termin zapisów!</h3>
-                          <p className="text-gray-600 dark:text-gray-400">
+                        <div className="p-4 bg-black border border-cyan-800 rounded-lg shadow-md text-white">
+                          <h3 className="font-semibold text-white">Nowy termin zapisów!</h3>
+                          <p className="text-cyan-200">
                             Z powodu dużego zainteresowania przedłużamy termin zapisów na Wtyczkę 2025 do 30 września! Nie przegap swojej szansy na niezapomniany wyjazd.
                           </p>
                         </div>
-                        <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md">
-                          <h3 className="font-semibold text-gray-800 dark:text-gray-200">Zmiana w programie wyjazdu</h3>
-                          <p className="text-gray-600 dark:text-gray-400">
+                        <div className="p-4 bg-black border border-cyan-800 rounded-lg shadow-md text-white">
+                          <h3 className="font-semibold text-white">Zmiana w programie wyjazdu</h3>
+                          <p className="text-cyan-200">
                             Uwaga! Zmiana w programie wyjazdu - zamiast planowanej wycieczki do Zakopanego, odbędzie się całodniowa integracja w ośrodku. Szczegóły wkrótce!
                           </p>
                         </div>
@@ -478,7 +478,7 @@ export default function Home() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="prose prose-sm sm:prose-base text-gray-800 dark:text-gray-100 leading-relaxed space-y-4 mt-4 px-4"
+                      className="prose prose-sm sm:prose-base bg-black text-white leading-relaxed space-y-4 mt-4 px-4 rounded-2xl"
                     >
                       <h2 className="text-xl font-bold flex items-center gap-2">❓ FAQ</h2>
                       <p>
@@ -486,15 +486,15 @@ export default function Home() {
                       </p>
                       <div className="space-y-4">
                         {/* Przykładowe pytania - w prawdziwej aplikacji te dane będą dynamiczne */}
-                        <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md">
-                          <h3 className="font-semibold text-gray-800 dark:text-gray-200">Jak mogę się zapisać?</h3>
-                          <p className="text-gray-600 dark:text-gray-400">
+                        <div className="p-4 bg-black border border-cyan-800 rounded-lg shadow-md text-white">
+                          <h3 className="font-semibold text-white">Jak mogę się zapisać?</h3>
+                          <p className="text-cyan-200">
                             Aby zapisać się na Wtyczkę 2025, wypełnij formularz zgłoszeniowy dostępny na naszej stronie internetowej. Po przesłaniu formularza otrzymasz potwierdzenie na podany adres e-mail.
                           </p>
                         </div>
-                        <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md">
-                          <h3 className="font-semibold text-gray-800 dark:text-gray-200">Czy mogę anulować zgłoszenie?</h3>
-                          <p className="text-gray-600 dark:text-gray-400">
+                        <div className="p-4 bg-black border border-cyan-800 rounded-lg shadow-md text-white">
+                          <h3 className="font-semibold text-white">Czy mogę anulować zgłoszenie?</h3>
+                          <p className="text-cyan-200">
                             Tak, możesz anulować zgłoszenie do 7 dni przed rozpoczęciem wyjazdu. W tym celu skontaktuj się z nami mailowo lub telefonicznie.
                           </p>
                         </div>
