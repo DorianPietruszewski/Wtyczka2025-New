@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
 import "swiper/css";
+import "swiper/css/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import dynamic from "next/dynamic";
@@ -55,6 +57,10 @@ export default function Home() {
   const [contactSuccess, setContactSuccess] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
   const [showHamburger, setShowHamburger] = useState(false);
+  const [showParticipantTabsMenu, setShowParticipantTabsMenu] = useState(false);
+  const [gallerySwiper, setGallerySwiper] = useState<any>(null);
+  const prevEl = useRef<HTMLButtonElement | null>(null);
+  const nextEl = useRef<HTMLButtonElement | null>(null);
   const navRef = React.useRef<HTMLDivElement>(null);
   const navDrawerRef = React.useRef<HTMLDivElement>(null);
   const zapiszBtnRef = React.useRef<HTMLAnchorElement>(null);
@@ -75,6 +81,22 @@ export default function Home() {
     window.addEventListener("resize", checkCollision);
     return () => window.removeEventListener("resize", checkCollision);
   }, []);
+
+  // Schowaj menu podzakładek gdy otwiera się panel boczny
+  useEffect(() => {
+    if (navOpen || showHamburger) {
+      setShowParticipantTabsMenu(false);
+    }
+  }, [navOpen, showHamburger]);
+
+  useEffect(() => {
+    if (gallerySwiper && prevEl.current && nextEl.current) {
+      gallerySwiper.params.navigation.prevEl = prevEl.current;
+      gallerySwiper.params.navigation.nextEl = nextEl.current;
+      gallerySwiper.navigation.init();
+      gallerySwiper.navigation.update();
+    }
+  }, [gallerySwiper, prevEl.current, nextEl.current]);
 
   return (
     <div className="relative min-h-screen flex flex-col bg-white dark:bg-black">
@@ -114,13 +136,25 @@ export default function Home() {
         {/* CENTER: Navigation Menu (desktop only) */}
         <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 gap-6" ref={navRef}>
           {mainTabs.map(tab => (
-            <button
-              key={tab.value}
-              className={`py-2 px-4 rounded ${activeTab === tab.value ? "font-bold text-blue-600" : ""}`}
-              onClick={() => setActiveTab(tab.value)}
-            >
-              {tab.label}
-            </button>
+            tab.value === "rules" ? (
+              <a
+                key={tab.value}
+                href="https://drive.google.com/file/d/1nIkLbvDKASJVq6a6RB75dlIA4bDWd26F/view"
+                target="_blank"
+                rel="noopener"
+                className={`py-2 px-4 rounded${activeTab === tab.value ? " font-bold text-blue-600" : ""}`}
+              >
+                {tab.label}
+              </a>
+            ) : (
+              <button
+                key={tab.value}
+                className={`py-2 px-4 rounded${activeTab === tab.value ? " font-bold text-blue-600" : ""}`}
+                onClick={() => setActiveTab(tab.value)}
+              >
+                {tab.label}
+              </button>
+            )
           ))}
         </div>
         {/* RIGHT: Zapisz się button (desktop only) */}
@@ -173,16 +207,29 @@ export default function Home() {
               ✕
             </button>
             {mainTabs.map(tab => (
-              <button
-                key={tab.value}
-                className={`py-2 px-4 rounded ${activeTab === tab.value ? "font-bold text-blue-600" : ""}`}
-                onClick={() => {
-                  setActiveTab(tab.value);
-                  setNavOpen(false);
-                }}
-              >
-                {tab.label}
-              </button>
+              tab.value === "rules" ? (
+                <a
+                  key={tab.value}
+                  href="https://drive.google.com/file/d/1nIkLbvDKASJVq6a6RB75dlIA4bDWd26F/view"
+                  target="_blank"
+                  rel="noopener"
+                  className="py-2 px-4 rounded text-left block hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                  onClick={() => setNavOpen(false)}
+                >
+                  {tab.label}
+                </a>
+              ) : (
+                <button
+                  key={tab.value}
+                  className={`py-2 px-4 rounded text-left hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200${activeTab === tab.value ? " font-bold text-blue-600" : ""}`}
+                  onClick={() => {
+                    setActiveTab(tab.value);
+                    setNavOpen(false);
+                  }}
+                >
+                  {tab.label}
+                </button>
+              )
             ))}
           </div>
         </div>
@@ -218,7 +265,7 @@ export default function Home() {
                 {/* Pulsujące błękitne światło */}
                 <span
                   aria-hidden="true"
-                  className="absolute z-0 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-cyan-400 opacity-40 blur-3xl animate-pulse"
+                  className="absolute z-0 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full bg-cyan-400 opacity-40 blur-2xl animate-pulse"
                 />
                 <Image
                   src="/wtyczka.png"
@@ -273,304 +320,195 @@ export default function Home() {
             </motion.section>
           )}
           {activeTab === "participants" && (
-            <motion.section
-              key="participants"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="w-full max-w-xl mx-auto flex flex-col gap-6 px-2"
-            >
-              {/* PARTICIPANT TABS */}
-              <div className="flex gap-2 mb-4 overflow-x-auto">
-                {participantTabs.map((tab) => (
+            <>
+              {/* PARTICIPANT TABS - fixed at the top below main nav, independent from content */}
+              <div
+                className="fixed left-0 right-0 z-40 bg-white/90 dark:bg-black/90 flex flex-col items-center pt-8 pb-3 mt-4 overflow-x-visible transition-all duration-300"
+                style={{ top: 88, marginTop: 0 }}
+              >
+                {/* Submenu Hamburger - visible only on mobile or when tabs don't fit */}
+                <div className="w-full flex md:hidden mb-2">
                   <button
-                    key={tab.value}
-                    className={`py-2 px-4 rounded-full whitespace-nowrap border-2 transition-all duration-200 font-semibold shadow-sm ${
-                      participantTab === tab.value
-                        ? "bg-cyan-500 text-white border-cyan-400 neon-ellipse-btn"
-                        : "bg-white dark:bg-gray-800 text-cyan-700 dark:text-cyan-200 border-cyan-200 hover:bg-cyan-50 dark:hover:bg-cyan-900"
-                    }`}
-                    onClick={() => setParticipantTab(tab.value)}
+                    className={`w-full max-w-xs mx-auto flex items-center justify-center px-4 py-2 rounded-lg shadow-md transition-colors duration-200 text-white text-lg font-semibold ${showParticipantTabsMenu ? 'bg-cyan-500' : 'bg-black/90 hover:bg-cyan-700'}`}
+                    onClick={() => setShowParticipantTabsMenu(v => !v)}
+                    aria-label="Otwórz menu zakładek"
+                    style={{ minHeight: 48 }}
                   >
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
-              <AnimatePresence mode="wait">
-                {participantTab === "about" && (
-                  <motion.div
-                    key="about"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="flex flex-col gap-4"
-                  >
-                    <div className="text-lg font-semibold">O wyjeździe</div>
-                    <div className="text-gray-700 dark:text-gray-200">
-                      Wyjazd integracyjny &quot;Wtyczka 2025&quot; to niezapomniana przygoda,
-                      integracja, zabawa i nowe znajomości! Czeka na Ciebie mnóstwo
-                      atrakcji, warsztatów i wspólnego czasu w pięknym miejscu.
-                    </div>
-                    {/* GALLERY SWIPER */}
-                    <Swiper
-                      spaceBetween={12}
-                      slidesPerView={1.1}
-                      className="rounded-xl neon-border overflow-hidden w-full max-w-md bg-black/40"
-                      style={{ minHeight: 180 }}
-                    >
-                      <SwiperSlide>
-                        <Image
-                          src="/gallery1.jpg"
-                          alt="Galeria 1"
-                          width={400}
-                          height={176}
-                          className="w-full h-44 object-cover"
-                        />
-                      </SwiperSlide>
-                      <SwiperSlide>
-                        <Image
-                          src="/gallery2.jpg"
-                          alt="Galeria 2"
-                          width={400}
-                          height={176}
-                          className="w-full h-44 object-cover"
-                        />
-                      </SwiperSlide>
-                      <SwiperSlide>
-                        <Image
-                          src="/gallery3.jpg"
-                          alt="Galeria 3"
-                          width={400}
-                          height={176}
-                          className="w-full h-44 object-cover"
-                        />
-                      </SwiperSlide>
-                    </Swiper>
-                  </motion.div>
-                )}
-                {participantTab === "packing" && (
-                  <motion.ul
-                    key="packing"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="list-disc pl-6 text-cyan-800 dark:text-cyan-200"
-                  >
-                    <li>Dowód osobisty</li>
-                    <li>Ubrania na każdą pogodę</li>
-                    <li>Ręcznik, kosmetyki</li>
-                    <li>Ładowarka do telefonu</li>
-                    <li>Dobry humor!</li>
-                  </motion.ul>
-                )}
-                {participantTab === "news" && (
-                  <motion.ul
-                    key="news"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="list-disc pl-6 text-cyan-800 dark:text-cyan-200"
-                  >
-                    <li>Start zapisów: 1 lipca 2025</li>
-                    <li>Ogłoszenie miejsca: 15 lipca 2025</li>
-                    <li>Więcej informacji wkrótce!</li>
-                  </motion.ul>
-                )}
-                {participantTab === "faq" && (
-                  <motion.ul
-                    key="faq"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="list-disc pl-6 text-cyan-800 dark:text-cyan-200"
-                  >
-                    <li>
-                      Czy mogę zabrać znajomego? – Tak, jeśli się zapisze!
-                    </li>
-                    <li>
-                      Czy jest transport? – Szczegóły wkrótce.
-                    </li>
-                    <li>
-                      Jak się zapisać? – Kliknij &quot;Zapisz się&quot;!
-                    </li>
-                  </motion.ul>
-                )}
-              </AnimatePresence>
-            </motion.section>
-          )}
-          {activeTab === "rules" && (
-            <motion.section
-              key="rules"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="w-full max-w-xl mx-auto flex flex-col gap-6 px-2 items-center justify-center text-center"
-            >
-              <div className="text-lg font-semibold">
-                Regulamin dostępny pod tym linkiem
-              </div>
-              <a
-                href="https://linkdoregulaminu.pl"
-                target="_blank"
-                rel="noopener"
-                className="bg-blue-600 text-white font-bold px-6 py-3 rounded-full shadow hover:bg-blue-700 transition"
-              >
-                Otwórz regulamin
-              </a>
-            </motion.section>
-          )}
-          {activeTab === "contact" && (
-            <motion.section
-              key="contact"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="w-full max-w-xl mx-auto flex flex-col gap-6 px-2 items-center justify-center"
-            >
-              <form
-                className="w-full flex flex-col gap-4 bg-white/80 dark:bg-black/80 p-6 rounded-xl neon-border shadow"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setContactSuccess(false);
-                  setContactError("");
-                  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(contact.email)) {
-                    setContactError("Podaj poprawny adres email.");
-                    return;
-                  }
-                  if (!contact.message.trim()) {
-                    setContactError("Wpisz wiadomość.");
-                    return;
-                  }
-                  if (contact.message.length > 2000) {
-                    setContactError("Wiadomość może mieć maksymalnie 2000 znaków.");
-                    return;
-                  }
-                  setContactSuccess(true);
-                  setContact({ email: "", message: "" });
-                }}
-              >
-                <label className="flex flex-col gap-1">
-                  <span className="font-semibold">Email</span>
-                  <input
-                    type="email"
-                    value={contact.email}
-                    onChange={(e) => setContact({ ...contact, email: e.target.value })}
-                    className="border-b-2 border-cyan-300 focus:border-cyan-500 focus:outline-none py-2 px-4 bg-transparent rounded-md shadow-sm transition-all duration-200"
-                    required
-                  />
-                </label>
-                <label className="flex flex-col gap-1">
-                  <span className="font-semibold">Wiadomość</span>
-                  <textarea
-                    value={contact.message}
-                    onChange={(e) => setContact({ ...contact, message: e.target.value })}
-                    className="border-b-2 border-cyan-300 focus:border-cyan-500 focus:outline-none py-2 px-4 bg-transparent rounded-md shadow-sm transition-all duration-200 resize-none"
-                    rows={4}
-                    maxLength={2000}
-                    required
-                  />
-                </label>
-                {contactError && (
-                  <div className="text-red-500 text-sm font-medium">
-                    {contactError}
-                  </div>
-                )}
-                {contactSuccess && (
-                  <div className="text-green-500 text-sm font-medium">
-                    Wiadomość została wysłana! Skontaktujemy się z Tobą wkrótce.
-                  </div>
-                )}
-                <button
-                  type="submit"
-                  className="mt-4 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded-md shadow transition-all duration-200 flex items-center justify-center gap-2"
-                >
-                  {contactSuccess ? "Wysłano!" : "Wyślij wiadomość"}
-                  {!contactSuccess && (
                     <svg
+                      width="40" height="28" viewBox="0 0 40 28" fill="none"
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5 animate-spin"
-                      viewBox="0 0 24 24"
+                      className={`transition-transform duration-300 ${showParticipantTabsMenu ? 'rotate-180' : ''}`}
                     >
-                      <circle
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                        fill="none"
-                        className="opacity-25"
-                      />
-                      <path
-                        d="M14.243 14.243a6 6 0 10-8.486-8.486M12 6v6h6"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        fill="none"
-                        className="opacity-75"
-                      />
+                      <g filter="url(#neon-glow)">
+                        <path d="M6 10L20 22L34 10" stroke="#fff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+                      </g>
+                      <defs>
+                        <filter id="neon-glow" x="0" y="0" width="40" height="28" filterUnits="userSpaceOnUse">
+                          <feDropShadow dx="0" dy="0" stdDeviation="2" floodColor="#22d3ee"/>
+                        </filter>
+                      </defs>
                     </svg>
-                  )}
-                </button>
-              </form>
-            </motion.section>
-          )}
-          {activeTab === "signup" && (
-            <motion.section
-              key="signup"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="w-full max-w-xl mx-auto flex flex-col gap-6 px-2 pt-24"
-            >
-              <div className="text-lg font-semibold text-center">
-                Zapisz się na wyjazd integracyjny "Wtyczka 2025"
+                  </button>
+                </div>
+                {/* Dropdown for tabs with smooth animation - mobile only */}
+                <div
+                  className={`md:hidden absolute left-0 right-0 top-full w-full bg-white dark:bg-black shadow-lg z-50 flex flex-col overflow-hidden transition-all duration-300 ${showParticipantTabsMenu ? 'max-h-96 opacity-100 mt-2' : 'max-h-0 opacity-0 mt-0 pointer-events-none'}`}
+                  style={{ boxShadow: showParticipantTabsMenu ? '0 8px 32px 0 rgba(34,211,238,0.15)' : undefined }}
+                  aria-hidden={!showParticipantTabsMenu}
+                >
+                  {participantTabs.map((tab) => (
+                    <button
+                      key={tab.value}
+                      className={`py-3 px-6 font-semibold transition-all duration-200 bg-transparent text-cyan-300 hover:text-cyan-100 focus:outline-none focus:ring-0 ${participantTab === tab.value ? 'text-white bg-cyan-500' : ''}`}
+                      onClick={() => { setParticipantTab(tab.value); setShowParticipantTabsMenu(false); }}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+                {/* Tabs - always visible in row on desktop */}
+                <div className="hidden md:flex flex-nowrap gap-2">
+                  {participantTabs.map((tab) => (
+                    <button
+                      key={tab.value}
+                      className={`py-2 px-4 rounded-full font-semibold transition-all duration-200 bg-transparent text-cyan-300 hover:text-cyan-100 focus:outline-none focus:ring-0 ${participantTab === tab.value ? 'text-white bg-cyan-500' : ''}`}
+                      onClick={() => setParticipantTab(tab.value)}
+                      style={{ whiteSpace: 'nowrap' }}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <RegistrationForm />
-            </motion.section>
+              <motion.section
+                key="participants"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="w-full max-w-xl mx-auto flex flex-col gap-6 px-2 pt-[120px] md:pt-[80px]"
+              >
+                <AnimatePresence mode="wait">
+                  {participantTab === "about" && (
+                    <motion.div
+                      key="about"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="prose prose-sm sm:prose-base text-gray-800 dark:text-gray-100 leading-relaxed space-y-4 mt-4 px-4"
+                    >
+                      <h2 className="text-xl font-bold flex items-center gap-2">🧭 O WYJEŹDZIE</h2>
+                      <p>
+                        Wtyczka 2025 to legendarna integracja studencka, na której nie może Cię zabraknąć!<br/>
+                        Nieważne, z którego jesteś wydziału – jeśli studiujesz na Politechnice Łódzkiej, ten wyjazd jest właśnie dla Ciebie! <span role="img" aria-label="wtyczka">🔌</span>
+                      </p>
+                      <p>
+                        W dniach <b>24–27 października</b> zabieramy Was do ośrodka “Zbójnik” w Murzasichlu, gdzie przez cztery dni czekają na Was:
+                      </p>
+                      <ul className="list-none space-y-1">
+                        <li>🎁 pakiet powitalny pełen niespodzianek</li>
+                        <li>🏠 zakwaterowanie w pokojach kilkuosobowych</li>
+                        <li>🚌 autokarowy przejazd w dobrym stylu</li>
+                        <li>🎉 imprezy tematyczne i integracyjne</li>
+                        <li>🧠 szkolenia i warsztaty, które pomogą Ci ogarnąć życie studenckie</li>
+                        <li>🍽️ pełne wyżywienie (także wegetariańskie)</li>
+                        <li>🛡️ ubezpieczenie na cały czas wyjazdu</li>
+                      </ul>
+                      <p>
+                        Do tego – najlepsi ludzie, studencki klimat, masa śmiechu i wspomnień, które zostaną z Tobą na długo! <span role="img" aria-label="gwiazdki">🤩</span><br/>
+                        Organizatorem wyjazdu jest <b>Wydziałowa Rada Samorządu WEEIA</b>, ale uczestniczyć może każdy student PŁ. To Twoja okazja, by poznać znajomych z różnych wydziałów i naładować się pozytywną energią na cały semestr!
+                      </p>
+                    </motion.div>
+                  )}
+                  {participantTab === "packing" && (
+                    <motion.div
+                      key="packing"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="prose prose-sm sm:prose-base text-gray-800 dark:text-gray-100 leading-relaxed space-y-4 mt-4 px-4"
+                    >
+                      <h2 className="text-xl font-bold flex items-center gap-2">🎒 CO ZABRAĆ?</h2>
+                      <p>Pakowanie przed Wtyczką nie musi być trudne – oto niezbędnik uczestnika:</p>
+                      <ul className="list-none space-y-1">
+                        <li>✅ Dokument tożsamości (dowód osobisty lub paszport)</li>
+                        <li>✅ Wydrukowane i podpisane oświadczenie obozowe</li>
+                        <li>✅ Potwierdzenie wpłaty – dla własnej pewności</li>
+                        <li>✅ Leki przyjmowane na stałe (plus informacja o nich dla organizatorów)</li>
+                        <li>✅ Ubrania na każdą pogodę i wygodne buty</li>
+                        <li>✅ Przybory toaletowe i ręcznik</li>
+                        <li>✅ Koc lub śpiwór (jeśli masz)</li>
+                        <li>✅ Dobry humor i chęć do zabawy!</li>
+                      </ul>
+                      <p>
+                        Pamiętaj, że na miejscu zapewniamy pełne wyżywienie, więc nie musisz zabierać jedzenia. Jeśli masz jakieś specjalne wymagania dietetyczne, daj nam znać z wyprzedzeniem.
+                      </p>
+                    </motion.div>
+                  )}
+                  {participantTab === "news" && (
+                    <motion.div
+                      key="news"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="prose prose-sm sm:prose-base text-gray-800 dark:text-gray-100 leading-relaxed space-y-4 mt-4 px-4"
+                    >
+                      <h2 className="text-xl font-bold flex items-center gap-2">📰 AKTUALNOŚCI</h2>
+                      <p>
+                        Bądź na bieżąco z najnowszymi informacjami o Wtyczce 2025! Tutaj znajdziesz wszystkie ważne ogłoszenia i aktualizacje.
+                      </p>
+                      <div className="space-y-4">
+                        {/* Przykładowe aktualności - w prawdziwej aplikacji te dane będą dynamiczne */}
+                        <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md">
+                          <h3 className="font-semibold text-gray-800 dark:text-gray-200">Nowy termin zapisów!</h3>
+                          <p className="text-gray-600 dark:text-gray-400">
+                            Z powodu dużego zainteresowania przedłużamy termin zapisów na Wtyczkę 2025 do 30 września! Nie przegap swojej szansy na niezapomniany wyjazd.
+                          </p>
+                        </div>
+                        <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md">
+                          <h3 className="font-semibold text-gray-800 dark:text-gray-200">Zmiana w programie wyjazdu</h3>
+                          <p className="text-gray-600 dark:text-gray-400">
+                            Uwaga! Zmiana w programie wyjazdu - zamiast planowanej wycieczki do Zakopanego, odbędzie się całodniowa integracja w ośrodku. Szczegóły wkrótce!
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                  {participantTab === "faq" && (
+                    <motion.div
+                      key="faq"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="prose prose-sm sm:prose-base text-gray-800 dark:text-gray-100 leading-relaxed space-y-4 mt-4 px-4"
+                    >
+                      <h2 className="text-xl font-bold flex items-center gap-2">❓ FAQ</h2>
+                      <p>
+                        Masz pytania? Sprawdź najczęściej zadawane pytania dotyczące Wtyczki 2025. Jeśli nie znajdziesz odpowiedzi, skontaktuj się z nami!
+                      </p>
+                      <div className="space-y-4">
+                        {/* Przykładowe pytania - w prawdziwej aplikacji te dane będą dynamiczne */}
+                        <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md">
+                          <h3 className="font-semibold text-gray-800 dark:text-gray-200">Jak mogę się zapisać?</h3>
+                          <p className="text-gray-600 dark:text-gray-400">
+                            Aby zapisać się na Wtyczkę 2025, wypełnij formularz zgłoszeniowy dostępny na naszej stronie internetowej. Po przesłaniu formularza otrzymasz potwierdzenie na podany adres e-mail.
+                          </p>
+                        </div>
+                        <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md">
+                          <h3 className="font-semibold text-gray-800 dark:text-gray-200">Czy mogę anulować zgłoszenie?</h3>
+                          <p className="text-gray-600 dark:text-gray-400">
+                            Tak, możesz anulować zgłoszenie do 7 dni przed rozpoczęciem wyjazdu. W tym celu skontaktuj się z nami mailowo lub telefonicznie.
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.section>
+            </>
           )}
+          {/* ...other activeTab sections... */}
         </AnimatePresence>
       </main>
-
-      {/* FOOTER */}
-      <footer className="bg-white dark:bg-black py-8">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="text-center sm:text-left">
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                &copy; 2025 Wtyczka. Wszystkie prawa zastrzeżone.
-              </div>
-            </div>
-            <div className="flex gap-4">
-              <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noopener"
-                className="text-gray-600 dark:text-gray-300 hover:text-cyan-500 transition-colors"
-                aria-label="Facebook"
-              >
-                <FaFacebook className="h-5 w-5" />
-              </a>
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener"
-                className="text-gray-600 dark:text-gray-300 hover:text-cyan-500 transition-colors"
-                aria-label="Instagram"
-              >
-                <FaInstagram className="h-5 w-5" />
-              </a>
-              <a
-                href="https://linkedin.com"
-                target="_blank"
-                rel="noopener"
-                className="text-gray-600 dark:text-gray-300 hover:text-cyan-500 transition-colors"
-                aria-label="LinkedIn"
-              >
-                <FaLinkedin className="h-5 w-5" />
-              </a>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

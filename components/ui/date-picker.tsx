@@ -9,7 +9,6 @@ import { Button } from "./button";
 import { Calendar } from "./calendar";
 import { Input } from "./input";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select";
 
 interface DatePickerProps {
   placeholder?: string;
@@ -141,31 +140,6 @@ export default function DatePicker({
     }
   };
 
-  // Month/year select for calendar
-  const months = [
-    { value: 0, label: "Styczeń" },
-    { value: 1, label: "Luty" },
-    { value: 2, label: "Marzec" },
-    { value: 3, label: "Kwiecień" },
-    { value: 4, label: "Maj" },
-    { value: 5, label: "Czerwiec" },
-    { value: 6, label: "Lipiec" },
-    { value: 7, label: "Sierpień" },
-    { value: 8, label: "Wrzesień" },
-    { value: 9, label: "Październik" },
-    { value: 10, label: "Listopad" },
-    { value: 11, label: "Grudzień" },
-  ];
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 151 }, (_, i) => currentYear - i);
-
-  const handleMonthChange = (month: string) => {
-    setCalendarMonth((prev) => new Date(prev.getFullYear(), Number(month), 1));
-  };
-  const handleYearChange = (year: string) => {
-    setCalendarMonth((prev) => new Date(Number(year), prev.getMonth(), 1));
-  };
-
   return (
     <div className={cn("relative w-full", className)}>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -205,7 +179,6 @@ export default function DatePicker({
               locale={pl}
               month={calendarMonth}
               onMonthChange={setCalendarMonth}
-              initialFocus
               className="rounded-md"
               classNames={{
                 head_row: "flex",

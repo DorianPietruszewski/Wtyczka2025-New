@@ -24,7 +24,6 @@ const ComboBox: React.FC<ComboBoxProps> = ({
   placeholder = "Wybierz...",
   label,
   name,
-  required = false,
   className = "",
   renderValue,
 }) => {

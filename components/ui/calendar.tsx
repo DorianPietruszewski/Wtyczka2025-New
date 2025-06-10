@@ -3,18 +3,16 @@
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "../../lib/utils";
-import { Button, buttonVariants } from "./button";
+import { buttonVariants } from "./button";
 
 interface CalendarProps {
   selected?: Date;
   onSelect?: (date: Date) => void;
   month?: Date;
   onMonthChange?: (date: Date) => void;
-  locale?: any;
   disabled?: boolean;
   className?: string;
   classNames?: Record<string, string>;
-  initialFocus?: boolean;
 }
 
 function getDaysInMonth(year: number, month: number) {
@@ -32,11 +30,9 @@ export function Calendar({
   onSelect,
   month: monthProp,
   onMonthChange,
-  locale,
   disabled,
   className,
   classNames = {},
-  initialFocus,
 }: CalendarProps) {
   const today = new Date();
   const [month, setMonth] = React.useState<Date>(monthProp || new Date());
