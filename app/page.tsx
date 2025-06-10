@@ -1,9 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -58,9 +56,6 @@ export default function Home() {
   const [navOpen, setNavOpen] = useState(false);
   const [showHamburger, setShowHamburger] = useState(false);
   const [showParticipantTabsMenu, setShowParticipantTabsMenu] = useState(false);
-  const [gallerySwiper, setGallerySwiper] = useState<any>(null);
-  const prevEl = useRef<HTMLButtonElement | null>(null);
-  const nextEl = useRef<HTMLButtonElement | null>(null);
   const navRef = React.useRef<HTMLDivElement>(null);
   const navDrawerRef = React.useRef<HTMLDivElement>(null);
   const zapiszBtnRef = React.useRef<HTMLAnchorElement>(null);
@@ -89,30 +84,21 @@ export default function Home() {
     }
   }, [activeTab, navOpen, showHamburger]);
 
-  useEffect(() => {
-    if (gallerySwiper && prevEl.current && nextEl.current) {
-      gallerySwiper.params.navigation.prevEl = prevEl.current;
-      gallerySwiper.params.navigation.nextEl = nextEl.current;
-      gallerySwiper.navigation.init();
-      gallerySwiper.navigation.update();
-    }
-  }, [gallerySwiper, prevEl.current, nextEl.current]);
-
   return (
-    <div className="relative min-h-screen flex flex-col bg-black">
+    <div className="relative min-h-screen flex flex-col bg-black text-white">
       {/* NAVIGATION BAR */}
-      <nav className="fixed top-0 left-0 w-full z-30 bg-black shadow-sm flex items-center justify-between px-4 py-2 md:px-8">
+      <nav className="fixed top-0 left-0 w-full z-30 bg-black shadow-sm flex items-center justify-between px-4 py-2 md:px-8 text-white">
         {/* LEFT: Logo & Hamburger */}
-        <div className="flex items-center gap-2 min-w-[120px] relative">
+        <div className="flex items-center gap-2 min-w-[120px] relative text-white">
           {/* Hamburger button only visible on mobile (md:hidden) */}
           <button
-            className="p-2 md:hidden"
+            className="p-2 md:hidden text-white"
             onClick={() => setNavOpen((v) => !v)}
             aria-label="Otwórz menu"
           >
-            <span className="block w-6 h-0.5 bg-gray-800 dark:bg-gray-200 mb-1"></span>
-            <span className="block w-6 h-0.5 bg-gray-800 dark:bg-gray-200 mb-1"></span>
-            <span className="block w-6 h-0.5 bg-gray-800 dark:bg-gray-200"></span>
+            <span className="block w-6 h-0.5 bg-white mb-1"></span>
+            <span className="block w-6 h-0.5 bg-white mb-1"></span>
+            <span className="block w-6 h-0.5 bg-white"></span>
           </button>
           {/* Logo widoczne tylko na desktopie */}
           <a
@@ -136,7 +122,7 @@ export default function Home() {
           </a>
         </div>
         {/* CENTER: Navigation Menu (desktop only) */}
-        <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 gap-6 bg-black" ref={navRef}>
+        <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 gap-6 bg-black text-white" ref={navRef}>
           {mainTabs.map(tab => {
             const isActive = activeTab === tab.value;
             if (tab.value === "rules") {
@@ -167,7 +153,7 @@ export default function Home() {
           })}
         </div>
         {/* RIGHT: Zapisz się button (desktop only) */}
-        <div className="hidden md:flex min-w-[160px] justify-end bg-black">
+        <div className="hidden md:flex min-w-[160px] justify-end bg-black text-white">
           <a
             ref={zapiszBtnRef}
             onClick={e => {
@@ -185,7 +171,7 @@ export default function Home() {
         {/* MOBILE: Navigation Drawer */}
         <div
           ref={navDrawerRef}
-          className={`fixed md:hidden inset-0 z-[99999] flex transition-transform duration-300${navOpen ? "" : " pointer-events-none"}`}
+          className={`fixed md:hidden inset-0 z-[99999] flex transition-transform duration-300${navOpen ? "" : " pointer-events-none"} text-white`}
         >
           {/* Overlay */}
           <div
@@ -195,7 +181,7 @@ export default function Home() {
           />
           {/* Drawer content */}
           <div
-            className={`relative w-2/3 max-w-xs h-full bg-black shadow-lg flex flex-col gap-2 p-6 transition-transform duration-300${navOpen ? " translate-x-0" : " -translate-x-full"}`}
+            className={`relative w-2/3 max-w-xs h-full bg-black shadow-lg flex flex-col gap-2 p-6 transition-transform duration-300${navOpen ? " translate-x-0" : " -translate-x-full"} text-white`}
           >
             {/* Logo w panelu bocznym */}
             <div className="flex items-center justify-center mb-6">
@@ -263,7 +249,7 @@ export default function Home() {
       )}
 
       {/* MAIN CONTENT */}
-      <main className="flex-1 flex flex-col items-center justify-center pt-20 pb-32 sm:pb-8 w-full bg-black">
+      <main className="flex-1 flex flex-col items-center justify-center pt-20 pb-32 sm:pb-8 w-full bg-black text-white">
         <AnimatePresence mode="wait">
           {activeTab === "home" && (
             <motion.section
@@ -545,7 +531,7 @@ export default function Home() {
                 Skontaktuj się z nami
               </div>
               <form
-                className="w-full flex flex-col gap-6 bg-white/90 dark:bg-black/80 p-8 rounded-2xl shadow-xl border border-cyan-200 dark:border-cyan-900/40 backdrop-blur-md"
+                className="w-full flex flex-col gap-6 bg-black p-8 rounded-2xl shadow-xl border border-cyan-200 backdrop-blur-md text-white"
                 onSubmit={(e) => {
                   e.preventDefault();
                   setContactSuccess(false);
@@ -571,11 +557,11 @@ export default function Home() {
                     type="email"
                     value={contact.email}
                     onChange={(e) => setContact({ ...contact, email: e.target.value })}
-                    className="peer w-full px-4 pt-6 pb-2 bg-transparent border-2 border-cyan-200 dark:border-cyan-700 rounded-lg focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 dark:focus:ring-cyan-700 outline-none transition-all placeholder-transparent text-base text-gray-900 dark:text-gray-100"
+                    className="peer w-full px-4 pt-6 pb-2 bg-transparent border-2 border-cyan-200 rounded-lg focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 outline-none transition-all placeholder-transparent text-base text-white"
                     placeholder="Email"
                     required
                   />
-                  <label className="absolute left-4 top-2 text-cyan-600 dark:text-cyan-300 text-sm font-semibold pointer-events-none transition-all duration-200 peer-focus:top-1 peer-focus:text-xs peer-focus:text-cyan-500 dark:peer-focus:text-cyan-300 peer-placeholder-shown:top-6 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 dark:peer-placeholder-shown:text-gray-500">
+                  <label className="absolute left-4 top-2 text-cyan-200 text-sm font-semibold pointer-events-none transition-all duration-200 peer-focus:top-1 peer-focus:text-xs peer-focus:text-cyan-200 peer-placeholder-shown:top-6 peer-placeholder-shown:text-base peer-placeholder-shown:text-cyan-400">
                     Email
                   </label>
                 </div>
@@ -583,13 +569,13 @@ export default function Home() {
                   <textarea
                     value={contact.message}
                     onChange={(e) => setContact({ ...contact, message: e.target.value })}
-                    className="peer w-full px-4 pt-6 pb-2 bg-transparent border-2 border-cyan-200 dark:border-cyan-700 rounded-lg focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 dark:focus:ring-cyan-700 outline-none transition-all placeholder-transparent text-base text-gray-900 dark:text-gray-100 resize-none min-h-[120px]"
+                    className="peer w-full px-4 pt-6 pb-2 bg-transparent border-2 border-cyan-200 rounded-lg focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 outline-none transition-all placeholder-transparent text-base text-white resize-none min-h-[120px]"
                     placeholder="Wiadomość"
                     rows={4}
                     maxLength={2000}
                     required
                   />
-                  <label className="absolute left-4 top-2 text-cyan-600 dark:text-cyan-300 text-sm font-semibold pointer-events-none transition-all duration-200 peer-focus:top-1 peer-focus:text-xs peer-focus:text-cyan-500 dark:peer-focus:text-cyan-300 peer-placeholder-shown:top-6 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 dark:peer-placeholder-shown:text-gray-500">
+                  <label className="absolute left-4 top-2 text-cyan-200 text-sm font-semibold pointer-events-none transition-all duration-200 peer-focus:top-1 peer-focus:text-xs peer-focus:text-cyan-200 peer-placeholder-shown:top-6 peer-placeholder-shown:text-base peer-placeholder-shown:text-cyan-400">
                     Wiadomość
                   </label>
                 </div>

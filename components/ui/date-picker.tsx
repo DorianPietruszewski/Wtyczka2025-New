@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { format } from "date-fns";
-import { pl } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { Button } from "./button";
@@ -55,7 +54,6 @@ export default function DatePicker({
     const day = dateToValidate.getDate();
     const month = dateToValidate.getMonth() + 1;
     const year = dateToValidate.getFullYear();
-    const currentYear = new Date().getFullYear();
     const minYear = 1900;
     const maxYear = 2025;
     if (day < 1 || day > 31) {
