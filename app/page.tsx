@@ -219,7 +219,7 @@ export default function Home() {
                 return (
                   <button
                     key={tab.value}
-                    className={`py-2 px-4 rounded text-left hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200${activeTab === tab.value ? " font-bold text-blue-600" : ""}`}
+                    className={`py-2 px-4 rounded text-left hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200${activeTab === tab.value ? " font-bold text-cyan-400" : ""}`}
                     onClick={() => {
                       setActiveTab(tab.value);
                       setNavOpen(false);
@@ -278,7 +278,7 @@ export default function Home() {
               {/* COUNTDOWN */}
               <div className="text-2xl font-bold text-center">
                 Do wyjazdu pozostało{" "}
-                <span className="text-blue-600">{daysLeft}</span> dni!
+                <span className="text-cyan-400">{daysLeft}</span> dni!
               </div>
               <button
                 onClick={() => setActiveTab("participants")}
