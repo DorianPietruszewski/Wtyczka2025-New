@@ -79,8 +79,16 @@ export default function RegistrationForm() {
 
 	const validate = () => {
 		const newErrors: FormErrors = {};
-		if (!form.imie.trim()) newErrors.imie = "Imię jest wymagane";
-		if (!form.nazwisko.trim()) newErrors.nazwisko = "Nazwisko jest wymagane";
+		if (!form.imie.trim()) {
+			newErrors.imie = "Imię jest wymagane";
+		} else if (!/^[A-Za-zĄąĆćĘęŁłŃńÓóŚśŹźŻż]+$/.test(form.imie)) {
+			newErrors.imie = "Imię może zawierać tylko litery, bez spacji, cyfr i znaków specjalnych";
+		}
+		if (!form.nazwisko.trim()) {
+			newErrors.nazwisko = "Nazwisko jest wymagane";
+		} else if (!/^[A-Za-zĄąĆćĘęŁłŃńÓóŚśŹźŻż]+$/.test(form.nazwisko)) {
+			newErrors.nazwisko = "Nazwisko może zawierać tylko litery, bez spacji, cyfr i znaków specjalnych";
+		}
 		if (!form.dataUrodzenia) newErrors.dataUrodzenia = "Data urodzenia jest wymagana";
 		if (!form.numerIndeksu.match(/^\d{6}$/)) newErrors.numerIndeksu = "Numer indeksu musi mieć dokładnie 6 cyfr";
 		if (!form.wydzial) newErrors.wydzial = "Wydział jest wymagany";
@@ -295,7 +303,7 @@ export default function RegistrationForm() {
 					</div>
 				</div>
 			</div>
-			<div className="flex items-center gap-3 mt-2">
+			<div className="flex items-start gap-3 mt-2">
 				<Checkbox
 					id="akceptacja"
 					name="akceptacja"
@@ -307,9 +315,9 @@ export default function RegistrationForm() {
 					required
 					aria-invalid={!!errors.akceptacja}
 					aria-describedby="akceptacja-error"
-					className="border-cyan-400 focus-visible:ring-cyan-400 focus-visible:border-cyan-400"
+					className="border-cyan-400 focus-visible:ring-cyan-400 focus-visible:border-cyan-400 mt-1"
 				/>
-				<Label htmlFor="akceptacja" className="text-white mb-2">
+				<Label htmlFor="akceptacja" className="text-white leading-tight cursor-pointer select-none pt-1">
 					Akceptuję <a href="/regulamin.pdf" target="_blank" rel="noopener noreferrer" className="underline text-cyan-400">regulamin</a> i <a href="/rodo.pdf" target="_blank" rel="noopener noreferrer" className="underline text-cyan-400">RODO</a> (wymagane)
 				</Label>
 			</div>

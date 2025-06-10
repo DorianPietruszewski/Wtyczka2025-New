@@ -79,8 +79,9 @@ export function Calendar({
     "Listopad",
     "Grudzień",
   ];
-  const minYear = 1980;
-  const maxYear = today.getFullYear();
+  // Change year range to 2025-1900
+  const minYear = 1900;
+  const maxYear = 2025;
   const years = Array.from({ length: maxYear - minYear + 1 }, (_, i) => maxYear - i);
 
   // Handlers for dropdowns

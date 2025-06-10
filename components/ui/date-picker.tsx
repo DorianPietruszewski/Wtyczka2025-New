@@ -56,7 +56,8 @@ export default function DatePicker({
     const month = dateToValidate.getMonth() + 1;
     const year = dateToValidate.getFullYear();
     const currentYear = new Date().getFullYear();
-    const minYear = currentYear - 150;
+    const minYear = 1900;
+    const maxYear = 2025;
     if (day < 1 || day > 31) {
       setValidationError("Dzień musi być między 1 a 31");
       return false;
@@ -65,8 +66,8 @@ export default function DatePicker({
       setValidationError("Miesiąc musi być między 1 a 12");
       return false;
     }
-    if (year < minYear || year > currentYear) {
-      setValidationError(`Rok musi być między ${minYear} a ${currentYear}`);
+    if (year < minYear || year > maxYear) {
+      setValidationError(`Rok musi być między ${minYear} a ${maxYear}`);
       return false;
     }
     const parsedDate = new Date(year, month - 1, day);
@@ -113,10 +114,12 @@ export default function DatePicker({
       const day = Number.parseInt(numbersOnly.substring(0, 2));
       const month = Number.parseInt(numbersOnly.substring(2, 4));
       const year = Number.parseInt(numbersOnly.substring(4, 8));
+      const minYear = 1900;
+      const maxYear = 2025;
       if (
         day >= 1 && day <= 31 &&
         month >= 1 && month <= 12 &&
-        year >= (new Date().getFullYear() - 150) && year <= new Date().getFullYear()
+        year >= minYear && year <= maxYear
       ) {
         const parsedDate = new Date(year, month - 1, day);
         if (
@@ -135,7 +138,7 @@ export default function DatePicker({
       } else {
         if (day < 1 || day > 31) setValidationError("Dzień musi być między 1 a 31");
         else if (month < 1 || month > 12) setValidationError("Miesiąc musi być między 1 a 12");
-        else if (year < (new Date().getFullYear() - 150) || year > new Date().getFullYear()) setValidationError(`Rok musi być między ${new Date().getFullYear() - 150} a ${new Date().getFullYear()}`);
+        else if (year < minYear || year > maxYear) setValidationError(`Rok musi być między ${minYear} a ${maxYear}`);
       }
     }
   };
@@ -176,7 +179,6 @@ export default function DatePicker({
               selected={date}
               onSelect={handleDateSelect}
               disabled={disabled}
-              locale={pl}
               month={calendarMonth}
               onMonthChange={setCalendarMonth}
               className="rounded-md"

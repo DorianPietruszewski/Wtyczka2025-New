@@ -10,7 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 
-const EVENT_DATE = new Date("2025-09-15T00:00:00");
+const EVENT_DATE = new Date("2025-10-24T00:00:00");
 
 function useCountdown(targetDate: Date) {
   const [days, setDays] = useState(() => {
@@ -84,10 +84,10 @@ export default function Home() {
 
   // Schowaj menu podzakładek gdy otwiera się panel boczny
   useEffect(() => {
-    if (navOpen || showHamburger) {
+    if ((activeTab === "participants") && (navOpen || showHamburger)) {
       setShowParticipantTabsMenu(false);
     }
-  }, [navOpen, showHamburger]);
+  }, [activeTab, navOpen, showHamburger]);
 
   useEffect(() => {
     if (gallerySwiper && prevEl.current && nextEl.current) {
@@ -105,14 +105,16 @@ export default function Home() {
         {/* LEFT: Logo & Hamburger */}
         <div className="flex items-center gap-2 min-w-[120px] relative">
           <button
-            className={showHamburger ? "p-2" : "md:hidden p-2"}
+            className="p-2 md:hidden"
             onClick={() => setNavOpen((v) => !v)}
             aria-label="Otwórz menu"
+            style={{ visibility: showHamburger ? 'visible' : 'hidden', pointerEvents: showHamburger ? 'auto' : 'none' }}
           >
             <span className="block w-6 h-0.5 bg-gray-800 dark:bg-gray-200 mb-1"></span>
             <span className="block w-6 h-0.5 bg-gray-800 dark:bg-gray-200 mb-1"></span>
             <span className="block w-6 h-0.5 bg-gray-800 dark:bg-gray-200"></span>
           </button>
+          {/* Logo widoczne tylko gdy NIE showHamburger */}
           <a
             href="#"
             onClick={e => {
@@ -120,7 +122,7 @@ export default function Home() {
               setActiveTab("home");
               setNavOpen(false);
             }}
-            className="hidden md:block relative z-10"
+            className={`hidden md:block relative z-10${showHamburger ? ' invisible pointer-events-none' : ''}`}
             aria-label="Strona główna"
           >
             <Image
@@ -133,32 +135,39 @@ export default function Home() {
             />
           </a>
         </div>
-        {/* CENTER: Navigation Menu (desktop only) */}
-        <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 gap-6" ref={navRef}>
-          {mainTabs.map(tab => (
-            tab.value === "rules" ? (
-              <a
-                key={tab.value}
-                href="https://drive.google.com/file/d/1nIkLbvDKASJVq6a6RB75dlIA4bDWd26F/view"
-                target="_blank"
-                rel="noopener"
-                className={`py-2 px-4 rounded${activeTab === tab.value ? " font-bold text-blue-600" : ""}`}
-              >
-                {tab.label}
-              </a>
-            ) : (
-              <button
-                key={tab.value}
-                className={`py-2 px-4 rounded${activeTab === tab.value ? " font-bold text-blue-600" : ""}`}
-                onClick={() => setActiveTab(tab.value)}
-              >
-                {tab.label}
-              </button>
-            )
-          ))}
+        {/* CENTER: Navigation Menu (desktop only, hidden in mobile/hamburger) */}
+        <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 gap-6${showHamburger ? ' invisible pointer-events-none' : ' hidden md:flex'}`} ref={navRef}>
+          {mainTabs.map(tab => {
+            const isActive = activeTab === tab.value;
+            if (tab.value === "rules") {
+              return (
+                <a
+                  key={tab.value}
+                  href="https://drive.google.com/file/d/1nIkLbvDKASJVq6a6RB75dlIA4bDWd26F/view"
+                  target="_blank"
+                  rel="noopener"
+                  className={`flex items-center justify-center px-8 py-3 rounded-full font-semibold border-2 border-cyan-400 shadow-[0_0_16px_2px_rgba(34,211,238,0.5)] transition-all duration-200 focus:outline-none focus:ring-0 neon-ellipse-btn ${isActive ? "bg-cyan-500 text-white ring-4 ring-cyan-300/40" : "text-cyan-100 bg-transparent hover:bg-cyan-500 hover:text-white hover:shadow-[0_0_32px_6px_rgba(34,211,238,0.8)]"}`}
+                  style={{ minHeight: 56, minWidth: 120 }}
+                >
+                  <span className="w-full text-center flex items-center justify-center">{tab.label}</span>
+                </a>
+              );
+            } else {
+              return (
+                <button
+                  key={tab.value}
+                  className={`flex items-center justify-center px-8 py-3 rounded-full font-semibold border-2 border-cyan-400 shadow-[0_0_16px_2px_rgba(34,211,238,0.5)] transition-all duration-200 focus:outline-none focus:ring-0 neon-ellipse-btn ${isActive ? "bg-cyan-500 text-white ring-4 ring-cyan-300/40" : "text-cyan-100 bg-transparent hover:bg-cyan-500 hover:text-white hover:shadow-[0_0_32px_6px_rgba(34,211,238,0.8)]"}`}
+                  onClick={() => setActiveTab(tab.value)}
+                  style={{ minHeight: 56, minWidth: 120 }}
+                >
+                  <span className="w-full text-center flex items-center justify-center">{tab.label}</span>
+                </button>
+              );
+            }
+          })}
         </div>
-        {/* RIGHT: Zapisz się button (desktop only) */}
-        <div className="hidden md:flex min-w-[160px] justify-end">
+        {/* RIGHT: Zapisz się button (desktop only, hidden in mobile/hamburger) */}
+        <div className={`min-w-[160px] justify-end${showHamburger ? ' invisible pointer-events-none' : ' hidden md:flex'}`}> 
           <a
             ref={zapiszBtnRef}
             onClick={e => {
@@ -206,37 +215,41 @@ export default function Home() {
             >
               ✕
             </button>
-            {mainTabs.map(tab => (
-              tab.value === "rules" ? (
-                <a
-                  key={tab.value}
-                  href="https://drive.google.com/file/d/1nIkLbvDKASJVq6a6RB75dlIA4bDWd26F/view"
-                  target="_blank"
-                  rel="noopener"
-                  className="py-2 px-4 rounded text-left block hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
-                  onClick={() => setNavOpen(false)}
-                >
-                  {tab.label}
-                </a>
-              ) : (
-                <button
-                  key={tab.value}
-                  className={`py-2 px-4 rounded text-left hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200${activeTab === tab.value ? " font-bold text-blue-600" : ""}`}
-                  onClick={() => {
-                    setActiveTab(tab.value);
-                    setNavOpen(false);
-                  }}
-                >
-                  {tab.label}
-                </button>
-              )
-            ))}
+            {mainTabs.map(tab => {
+              if (tab.value === "rules") {
+                return (
+                  <a
+                    key={tab.value}
+                    href="https://drive.google.com/file/d/1nIkLbvDKASJVq6a6RB75dlIA4bDWd26F/view"
+                    target="_blank"
+                    rel="noopener"
+                    className="py-2 px-4 rounded text-left block hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                    onClick={() => setNavOpen(false)}
+                  >
+                    {tab.label}
+                  </a>
+                );
+              } else {
+                return (
+                  <button
+                    key={tab.value}
+                    className={`py-2 px-4 rounded text-left hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200${activeTab === tab.value ? " font-bold text-blue-600" : ""}`}
+                    onClick={() => {
+                      setActiveTab(tab.value);
+                      setNavOpen(false);
+                    }}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              }
+            })}
           </div>
         </div>
       </nav>
 
-      {/* MOBILE ZAPISZ SIĘ BUTTON */}
-      {activeTab !== "signup" && !navOpen && !showHamburger && (
+      {/* MOBILE ZAPISZ SIĘ BUTTON - widoczny tylko w trybie hamburgera, nie na signup i gdy drawer zamknięty */}
+      {showHamburger && !navOpen && activeTab !== "signup" && (
         <a
           onClick={e => {
             e.preventDefault();
@@ -324,7 +337,7 @@ export default function Home() {
               {/* PARTICIPANT TABS - fixed at the top below main nav, independent from content */}
               <div
                 className="fixed left-0 right-0 z-40 bg-white/90 dark:bg-black/90 flex flex-col items-center pt-8 pb-3 mt-4 overflow-x-visible transition-all duration-300"
-                style={{ top: 88, marginTop: 0 }}
+                style={{ top: 88, marginTop: 0, display: navOpen || showHamburger ? 'none' : undefined }}
               >
                 {/* Submenu Hamburger - visible only on mobile or when tabs don't fit */}
                 <div className="w-full flex md:hidden mb-2">
@@ -506,7 +519,107 @@ export default function Home() {
               </motion.section>
             </>
           )}
-          {/* ...other activeTab sections... */}
+          {activeTab === "signup" && (
+            <motion.section
+              key="signup"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="w-full max-w-xl mx-auto flex flex-col gap-6 px-2 pt-8"
+            >
+              <div className="text-lg font-semibold text-center">
+                Zapisz się na wyjazd integracyjny &quot;Wtyczka 2025&quot;
+              </div>
+              <RegistrationForm />
+            </motion.section>
+          )}
+          {activeTab === "contact" && (
+            <motion.section
+              key="contact"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="w-full max-w-xl mx-auto flex flex-col gap-6 px-2 pt-8"
+            >
+              <div className="text-2xl font-bold text-center text-cyan-700 dark:text-cyan-300 mb-2">
+                Skontaktuj się z nami
+              </div>
+              <form
+                className="w-full flex flex-col gap-6 bg-white/90 dark:bg-black/80 p-8 rounded-2xl shadow-xl border border-cyan-200 dark:border-cyan-900/40 backdrop-blur-md"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setContactSuccess(false);
+                  setContactError("");
+                  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(contact.email)) {
+                    setContactError("Podaj poprawny adres email.");
+                    return;
+                  }
+                  if (!contact.message.trim()) {
+                    setContactError("Wpisz wiadomość.");
+                    return;
+                  }
+                  if (contact.message.length > 2000) {
+                    setContactError("Wiadomość może mieć maksymalnie 2000 znaków.");
+                    return;
+                  }
+                  setContactSuccess(true);
+                  setContact({ email: "", message: "" });
+                }}
+              >
+                <div className="relative">
+                  <input
+                    type="email"
+                    value={contact.email}
+                    onChange={(e) => setContact({ ...contact, email: e.target.value })}
+                    className="peer w-full px-4 pt-6 pb-2 bg-transparent border-2 border-cyan-200 dark:border-cyan-700 rounded-lg focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 dark:focus:ring-cyan-700 outline-none transition-all placeholder-transparent text-base text-gray-900 dark:text-gray-100"
+                    placeholder="Email"
+                    required
+                  />
+                  <label className="absolute left-4 top-2 text-cyan-600 dark:text-cyan-300 text-sm font-semibold pointer-events-none transition-all duration-200 peer-focus:top-1 peer-focus:text-xs peer-focus:text-cyan-500 dark:peer-focus:text-cyan-300 peer-placeholder-shown:top-6 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 dark:peer-placeholder-shown:text-gray-500">
+                    Email
+                  </label>
+                </div>
+                <div className="relative">
+                  <textarea
+                    value={contact.message}
+                    onChange={(e) => setContact({ ...contact, message: e.target.value })}
+                    className="peer w-full px-4 pt-6 pb-2 bg-transparent border-2 border-cyan-200 dark:border-cyan-700 rounded-lg focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 dark:focus:ring-cyan-700 outline-none transition-all placeholder-transparent text-base text-gray-900 dark:text-gray-100 resize-none min-h-[120px]"
+                    placeholder="Wiadomość"
+                    rows={4}
+                    maxLength={2000}
+                    required
+                  />
+                  <label className="absolute left-4 top-2 text-cyan-600 dark:text-cyan-300 text-sm font-semibold pointer-events-none transition-all duration-200 peer-focus:top-1 peer-focus:text-xs peer-focus:text-cyan-500 dark:peer-focus:text-cyan-300 peer-placeholder-shown:top-6 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 dark:peer-placeholder-shown:text-gray-500">
+                    Wiadomość
+                  </label>
+                </div>
+                {contactError && (
+                  <div className="text-red-500 text-sm font-medium text-center">
+                    {contactError}
+                  </div>
+                )}
+                {contactSuccess && (
+                  <div className="text-green-500 text-sm font-medium text-center">
+                    Wiadomość została wysłana! Skontaktujemy się z Tobą wkrótce.
+                  </div>
+                )}
+                <button
+                  type="submit"
+                  className="mt-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-all duration-200 flex items-center justify-center gap-2 text-lg tracking-wide focus:outline-none focus:ring-2 focus:ring-cyan-300 dark:focus:ring-cyan-800"
+                >
+                  {contactSuccess ? "Wysłano!" : "Wyślij wiadomość"}
+                </button>
+              </form>
+              {/* Kontakt bezpośredni */}
+              <div className="w-full max-w-xl mx-auto flex flex-col items-center gap-2 mt-2 bg-black border border-cyan-800 rounded-2xl p-6 shadow-md" style={{ width: '100%' }}>
+                <div className="text-base font-semibold text-cyan-200 mb-1">Kontakt do organizatorów:</div>
+                <div className="flex flex-col gap-1 text-gray-100 text-base">
+                  <span><span className="font-medium">Email:</span> <a href="mailto:wtyczka@kontakt.com" className="underline hover:text-cyan-400">wtyczka@kontakt.com</a></span>
+                  <span><span className="font-medium">Telefon:</span> <a href="tel:123456789" className="underline hover:text-cyan-400">123-456-789</a></span>
+                </div>
+              </div>
+            </motion.section>
+          )}
         </AnimatePresence>
       </main>
     </div>
