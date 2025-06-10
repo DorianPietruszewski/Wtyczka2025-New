@@ -99,22 +99,22 @@ export default function Home() {
   }, [gallerySwiper, prevEl.current, nextEl.current]);
 
   return (
-    <div className="relative min-h-screen flex flex-col bg-white dark:bg-black">
+    <div className="relative min-h-screen flex flex-col bg-black">
       {/* NAVIGATION BAR */}
-      <nav className="fixed top-0 left-0 w-full z-30 bg-white/90 dark:bg-black/90 shadow-sm flex items-center justify-between px-4 py-2 md:px-8">
+      <nav className="fixed top-0 left-0 w-full z-30 bg-black shadow-sm flex items-center justify-between px-4 py-2 md:px-8">
         {/* LEFT: Logo & Hamburger */}
         <div className="flex items-center gap-2 min-w-[120px] relative">
+          {/* Hamburger button only visible on mobile (md:hidden) */}
           <button
             className="p-2 md:hidden"
             onClick={() => setNavOpen((v) => !v)}
             aria-label="Otwórz menu"
-            style={{ visibility: showHamburger ? 'visible' : 'hidden', pointerEvents: showHamburger ? 'auto' : 'none' }}
           >
             <span className="block w-6 h-0.5 bg-gray-800 dark:bg-gray-200 mb-1"></span>
             <span className="block w-6 h-0.5 bg-gray-800 dark:bg-gray-200 mb-1"></span>
             <span className="block w-6 h-0.5 bg-gray-800 dark:bg-gray-200"></span>
           </button>
-          {/* Logo widoczne tylko gdy NIE showHamburger */}
+          {/* Logo widoczne tylko na desktopie */}
           <a
             href="#"
             onClick={e => {
@@ -122,7 +122,7 @@ export default function Home() {
               setActiveTab("home");
               setNavOpen(false);
             }}
-            className={`hidden md:block relative z-10${showHamburger ? ' invisible pointer-events-none' : ''}`}
+            className="hidden md:block relative z-10"
             aria-label="Strona główna"
           >
             <Image
@@ -135,8 +135,8 @@ export default function Home() {
             />
           </a>
         </div>
-        {/* CENTER: Navigation Menu (desktop only, hidden in mobile/hamburger) */}
-        <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 gap-6${showHamburger ? ' invisible pointer-events-none' : ' hidden md:flex'}`} ref={navRef}>
+        {/* CENTER: Navigation Menu (desktop only) */}
+        <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 gap-6 bg-black" ref={navRef}>
           {mainTabs.map(tab => {
             const isActive = activeTab === tab.value;
             if (tab.value === "rules") {
@@ -166,8 +166,8 @@ export default function Home() {
             }
           })}
         </div>
-        {/* RIGHT: Zapisz się button (desktop only, hidden in mobile/hamburger) */}
-        <div className={`min-w-[160px] justify-end${showHamburger ? ' invisible pointer-events-none' : ' hidden md:flex'}`}> 
+        {/* RIGHT: Zapisz się button (desktop only) */}
+        <div className="hidden md:flex min-w-[160px] justify-end bg-black">
           <a
             ref={zapiszBtnRef}
             onClick={e => {
@@ -185,17 +185,17 @@ export default function Home() {
         {/* MOBILE: Navigation Drawer */}
         <div
           ref={navDrawerRef}
-          className={`fixed md:hidden inset-0 z-[99999] flex transition-transform duration-300${navOpen || showHamburger ? "" : " pointer-events-none"}`}
+          className={`fixed md:hidden inset-0 z-[99999] flex transition-transform duration-300${navOpen ? "" : " pointer-events-none"}`}
         >
           {/* Overlay */}
           <div
-            className={`absolute inset-0 bg-black/60 transition-opacity duration-300${navOpen || showHamburger ? " opacity-100" : " opacity-0 pointer-events-none"}`}
+            className={`absolute inset-0 bg-black/60 transition-opacity duration-300${navOpen ? " opacity-100" : " opacity-0 pointer-events-none"}`}
             onClick={() => setNavOpen(false)}
             aria-label="Zamknij menu tło"
           />
           {/* Drawer content */}
           <div
-            className={`relative w-2/3 max-w-xs h-full bg-white dark:bg-black shadow-lg flex flex-col gap-2 p-6 transition-transform duration-300${navOpen || showHamburger ? " translate-x-0" : " -translate-x-full"}`}
+            className={`relative w-2/3 max-w-xs h-full bg-black shadow-lg flex flex-col gap-2 p-6 transition-transform duration-300${navOpen ? " translate-x-0" : " -translate-x-full"}`}
           >
             {/* Logo w panelu bocznym */}
             <div className="flex items-center justify-center mb-6">
@@ -248,8 +248,8 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* MOBILE ZAPISZ SIĘ BUTTON - widoczny tylko w trybie hamburgera, nie na signup i gdy drawer zamknięty */}
-      {showHamburger && !navOpen && activeTab !== "signup" && (
+      {/* MOBILE ZAPISZ SIĘ BUTTON */}
+      {activeTab !== "signup" && !navOpen && !showHamburger && (
         <a
           onClick={e => {
             e.preventDefault();
@@ -263,7 +263,7 @@ export default function Home() {
       )}
 
       {/* MAIN CONTENT */}
-      <main className="flex-1 flex flex-col items-center justify-center pt-20 pb-32 sm:pb-8 w-full">
+      <main className="flex-1 flex flex-col items-center justify-center pt-20 pb-32 sm:pb-8 w-full bg-black">
         <AnimatePresence mode="wait">
           {activeTab === "home" && (
             <motion.section
@@ -336,7 +336,7 @@ export default function Home() {
             <>
               {/* PARTICIPANT TABS - fixed at the top below main nav, independent from content */}
               <div
-                className="fixed left-0 right-0 z-40 bg-white/90 dark:bg-black/90 flex flex-col items-center pt-8 pb-3 mt-4 overflow-x-visible transition-all duration-300"
+                className="fixed left-0 right-0 z-40 bg-black flex flex-col items-center pt-8 pb-3 mt-4 overflow-x-visible transition-all duration-300"
                 style={{ top: 88, marginTop: 0, display: navOpen || showHamburger ? 'none' : undefined }}
               >
                 {/* Submenu Hamburger - visible only on mobile or when tabs don't fit */}
@@ -365,7 +365,7 @@ export default function Home() {
                 </div>
                 {/* Dropdown for tabs with smooth animation - mobile only */}
                 <div
-                  className={`md:hidden absolute left-0 right-0 top-full w-full bg-white dark:bg-black shadow-lg z-50 flex flex-col overflow-hidden transition-all duration-300 ${showParticipantTabsMenu ? 'max-h-96 opacity-100 mt-2' : 'max-h-0 opacity-0 mt-0 pointer-events-none'}`}
+                  className={`md:hidden absolute left-0 right-0 top-full w-full bg-black shadow-lg z-50 flex flex-col overflow-hidden transition-all duration-300 ${showParticipantTabsMenu ? 'max-h-96 opacity-100 mt-2' : 'max-h-0 opacity-0 mt-0 pointer-events-none'}`}
                   style={{ boxShadow: showParticipantTabsMenu ? '0 8px 32px 0 rgba(34,211,238,0.15)' : undefined }}
                   aria-hidden={!showParticipantTabsMenu}
                 >
