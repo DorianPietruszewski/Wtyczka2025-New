@@ -431,7 +431,6 @@ export default function Home() {
                       <ul className="list-none space-y-1">
                         <li>✅ Dokument tożsamości (dowód osobisty lub paszport)</li>
                         <li>✅ Wydrukowane i podpisane oświadczenie obozowe</li>
-                        <li>✅ Potwierdzenie wpłaty – dla własnej pewności</li>
                         <li>✅ Leki przyjmowane na stałe (plus informacja o nich dla organizatorów)</li>
                         <li>✅ Ubrania na każdą pogodę i wygodne buty</li>
                         <li>✅ Przybory toaletowe i ręcznik</li>
